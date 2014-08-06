@@ -6,7 +6,7 @@
 
 * Creation Date : 08-06-2014
 
-* Last Modified : Wed Aug  6 12:31:24 2014
+* Last Modified : Wed Aug  6 12:33:19 2014
 
 * Created By : Kiyor
 
@@ -21,6 +21,9 @@ import (
 )
 
 func ToNameAuto(name string) string {
+	if len(name) == 0 {
+		return ""
+	}
 	if strings.ToUpper(name[:1]) == name[:1] {
 		return ToUnderscoreName(name)
 	} else {
@@ -29,6 +32,9 @@ func ToNameAuto(name string) string {
 }
 
 func ToUnderscoreName(name string) string {
+	if len(name) == 0 {
+		return ""
+	}
 	var res string
 	for k, v := range name {
 		s := fmt.Sprintf("%c", v)
@@ -44,6 +50,9 @@ func ToUnderscoreName(name string) string {
 }
 
 func ToCamelName(name string) string {
+	if len(name) == 0 {
+		return ""
+	}
 	part := strings.Split(name, "_")
 	var res string
 	for _, v := range part {
