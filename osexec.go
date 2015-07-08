@@ -6,7 +6,7 @@
 
 * Creation Date : 12-16-2014
 
-* Last Modified : Tue 16 Dec 2014 07:05:37 PM UTC
+* Last Modified : Tue 16 Dec 2014 08:57:37 PM UTC
 
 * Created By : Kiyor
 
@@ -19,6 +19,7 @@ import (
 	"errors"
 	"io"
 	"os/exec"
+	"strings"
 )
 
 func Osexec(cmd string) (stdOut string, stdErr error) {
@@ -54,6 +55,8 @@ func Osexec(cmd string) (stdOut string, stdErr error) {
 	defer c.Wait()
 	out := <-outStdCh
 	e := <-outErrCh
+	out = strings.Trim(out, "\n")
+	e = strings.Trim(e, "\n")
 	if len(e) > 0 {
 		return out, errors.New(e)
 	}
