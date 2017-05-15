@@ -6,7 +6,7 @@
 
 * Creation Date : 02-02-2017
 
-* Last Modified : Thu 02 Feb 2017 06:54:19 PM UTC
+* Last Modified : Mon 15 May 2017 01:34:10 AM UTC
 
 * Created By : Kiyor
 
@@ -17,10 +17,27 @@ package golib
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
+	"go4.org/errorutil"
+	"os"
 )
 
 func JsonUnmarshal(data []byte, v interface{}) error {
-	d := json.NewDecoder(bytes.NewReader(data))
+	fh := bytes.NewReader(data)
+	d := json.NewDecoder(fh)
 	d.UseNumber()
-	return d.Decode(&v)
+	if err := d.Decode(&v); err != nil {
+		extra := ""
+		if serr, ok := err.(*json.SyntaxError); ok {
+			if _, serr := fh.Seek(0, os.SEEK_SET); serr != nil {
+				return fmt.Errorf("seek error: %v", err)
+			}
+			line, col, highlight := errorutil.HighlightBytePosition(fh, serr.Offset)
+			extra = fmt.Sprintf(":\nError at line %d, column %d (file offset %d):\n%s",
+				line, col, serr.Offset, highlight)
+		}
+		return fmt.Errorf("error parsing JSON object %s\n%v",
+			extra, err)
+	}
+	return nil
 }
