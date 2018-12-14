@@ -25,7 +25,7 @@ func LineReaderFunc(rd io.Reader, action func(string) error) error {
 		}
 	}
 }
-func LineReaderChan(rd io.Reader, ch chan string) chan error {
+func LineReaderChan(rd io.Reader, ch chan string, done chan struct{}) chan error {
 	err := make(chan error)
 	go func() {
 		reader := bufio.NewReader(rd)
@@ -37,6 +37,7 @@ func LineReaderChan(rd io.Reader, ch chan string) chan error {
 				if e != io.EOF {
 					err <- e
 				}
+				done <- struct{}{}
 				return
 			} else {
 				ch <- strings.TrimRight(l, "\n")
